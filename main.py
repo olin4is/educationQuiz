@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import ttk
 from tkinter import messagebox as mb
 from questions import data
 import random
@@ -6,32 +7,77 @@ import random
 class Education_Quiz:
 	def __init__(self):
 		self.qno=0
-		self.disp_title()
-		self.disp_ques()
-		self.opt_sel=IntVar()
-		self.opts=self.radio_buttons()
-		self.disp_opt()
-		self.buttons()
+		self.disp_start()
 		self.total_size=len(questions)
 		self.correct=0
 
 	def disp_res(self):
-		
+		for widget in ws.winfo_children():
+			widget.destroy()
+		text = Label(
+			ws, 
+            text="Результаты", 
+            width=400,
+            font=( 'ariel', 20, 'bold' ), 
+            anchor= 'w',
+			justify="center",
+			wraplength=400
+		)
+		text.place(x=310, y=100)
 		wrong_count = self.total_size - self.correct
 		correct = f"Правильно: {self.correct}"
 		wrong = f"Неправильно: {wrong_count}"
-		
 		score = int(self.correct / self.total_size * 100)
 		result = f"{score}%"
-		
-		mb.showinfo("Результат", f"{result}\n{correct}\n{wrong}")
+		progress_bar = ttk.Progressbar(
+			ws,
+			length=200,
+			mode="determinate"
+		)
+		progress_bar['value'] = score
+		progress_bar.place(x=290, y=200)
+		result_text = Label(
+			ws, 
+            text=f"{result}\n{correct}\n{wrong}", 
+            width=400,
+            font=( 'ariel', 20, 'bold' ), 
+            anchor= 'w',
+			justify="center",
+			wraplength=400
+		)
+		result_text.place(x=280, y=230)
 
+	def disp_start(self):
+		self.start_label = Label(
+			ws, 
+            text="Учебный тренажер\nпо теме\n\"Пожарная безопасность\"", 
+            width=400,
+            font=( 'ariel', 20, 'bold' ), 
+            anchor= 'w',
+			justify="center",
+			wraplength=400
+		)
+		self.start_label.place(x=220, y=100)
+
+		self.start_button = Button(
+			ws, 
+            text="Начать",
+            command=self.disp_ques,
+            width=15,
+            bg="#F2780C",
+            fg="white",
+            font=("ariel",16,"bold")
+		)
+		self.start_button.place(x=300, y=250)
 
 	def check_ans(self, qno):
 		if self.opt_sel.get() == answers[qno][1]:
 			return True
     
 	def next_btn(self):
+		for widget in ws.winfo_children():
+			widget.destroy()
+
 		if self.check_ans(self.qno):
 			self.correct += 1
 		
@@ -39,7 +85,6 @@ class Education_Quiz:
 		
 		if self.qno==self.total_size:
 			self.disp_res()
-			ws.destroy()
 		else:
 			self.disp_ques()
 			self.disp_opt()
@@ -76,13 +121,23 @@ class Education_Quiz:
 	def disp_opt(self):
 		val=0
 		self.opt_sel.set(0)
-		
 		for opt in options[self.qno]:
 			self.opts[val]['text']=opt
 			val+=1
 
 	def disp_ques(self):
-		
+		self.start_button.destroy()
+		self.start_label.destroy()
+
+		self.disp_title()
+		self.disp_text()
+		self.opt_sel=IntVar()
+		self.opts=self.radio_buttons()
+		self.disp_opt()
+		self.buttons()
+
+
+	def disp_text(self):
 		qno = Label(
             ws, 
             text=questions[self.qno], 
@@ -93,9 +148,7 @@ class Education_Quiz:
 			wraplength=650,
 			justify="left"
             )
-		
 		qno.place(x=100, y=130)
-
 
 	def disp_title(self):
 		title = Label(
