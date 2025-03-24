@@ -8,18 +8,20 @@ class Education_Quiz():
 	def __init__(self, window, data):
 		self.window = window
 		self.data = data
+		self.selected_answers = {}
 		self.start()
 		
 	def start(self):
 		self.generate_questions()
 		self.qno = 0
 		self.total_size=len(self.questions)
-		self.display_start()
 		self.correct=0
+		self.display_start()
+		self.selected_answers.clear()
 	
 	def render_background(self):
-		canva = Canvas(self.window, bg='#fefae0', width=800, height=500)
-		round_rectangle(canva, 50, 50, 750, 450, radius=150, fill="#dda15e")
+		canva = Canvas(self. window, bg='#dda15e', width=800, height=500)
+		round_rectangle(canva, 50, 50, 750, 450, radius=150, fill="#fefae0")
 		canva.pack()
 
 	def generate_questions(self):
@@ -34,8 +36,10 @@ class Education_Quiz():
 			self.answers.append(question["ответ"])
 
 	def display_results(self):
+		self.correct = self.check_ans()
 		self.clear()
 		self.render_background()
+
 		text = Label(
 			self.window, 
             text="Результаты", 
@@ -44,7 +48,7 @@ class Education_Quiz():
             font=( 'ariel', 20, 'bold' ), 
             anchor= 'w',
 			justify="center",
-			background="#dda15e",
+			background="#fefae0",
 			foreground="#283618"
 		)
 		text.place(x=315, y=100)
@@ -71,7 +75,7 @@ class Education_Quiz():
             font=( 'ariel', 20, 'bold' ), 
             anchor= 'w',
 			justify="center",
-			background="#dda15e",
+			background="#fefae0",
 			foreground="#283618"
 		)
 		result_text.place(x=289, y=230)
@@ -100,7 +104,7 @@ class Education_Quiz():
             font=( 'ariel', 20, 'bold' ), 
             anchor= 'w',
 			justify="center",
-			background="#dda15e",
+			background="#fefae0",
 			foreground="#283618"
 		)
 		start_label.place(x=230, y=140)
@@ -118,9 +122,13 @@ class Education_Quiz():
 		change_on_hover(start_button) 
 		start_button.place(x=310, y=290)
 
-	def check_ans(self, qno):
-		if self.opt_sel.get() == self.answers[qno][1]:
-			return True   
+	def check_ans(self):
+		correctAnswers = 0
+		for questionNumber, answer in self.selected_answers.items():
+			if answer == self.answers[questionNumber][1]:
+				correctAnswers += 1
+		return correctAnswers
+  
 		
 	def clear(self):
 		for widget in self.window.winfo_children():
@@ -129,8 +137,7 @@ class Education_Quiz():
 	def next_btn(self):
 		self.clear()
 
-		if self.check_ans(self.qno):
-			self.correct += 1
+		self.selected_answers[self.qno] = self.opt_sel.get()
 		
 		self.qno += 1
 		
@@ -156,7 +163,7 @@ class Education_Quiz():
             text="Следующий вопрос",
             command=self.next_btn,
             width=20,
-            bg="#bc6c25",
+            bg="#606c38",
             fg="white",
             font=("ariel",16,"bold"),
 			relief="flat"
@@ -193,7 +200,12 @@ class Education_Quiz():
 		self.opt_sel=IntVar()
 		self.opts=self.radio_buttons()
 		val=0
-		self.opt_sel.set(0)
+
+		if self.qno in self.selected_answers:
+			self.opt_sel.set(self.selected_answers[self.qno])
+		else:
+			self.opt_sel.set(0)
+
 		for opt in self.options[self.qno]:
 			self.opts[val]['text']=opt
 			val+=1
@@ -216,7 +228,7 @@ class Education_Quiz():
 			height=5,
             font=( 'ariel' ,16, 'bold' ), 
             anchor= 'w',
-			background="#dda15e",
+			background="#fefae0",
 			foreground="#283618",
 			justify="left",
 			wraplength=600
@@ -227,13 +239,13 @@ class Education_Quiz():
 		title = Label(
             self.window, 
             text="Пожарная безопасность",
-            width=50,
+            width=40,
 			height=1,
-			background="#fefae0",
+			background="#dda15e",
 			foreground="#283618", 
             font=("ariel", 20, "bold")
             )
-		title.place(x=0, y=2)
+		title.place(x=60, y=2)
 
 
 	def radio_buttons(self):
@@ -246,7 +258,7 @@ class Education_Quiz():
                 variable=self.opt_sel,
                 value = len(q_list)+1,
                 font = ("ariel",14),
-				background="#dda15e",
+				background="#fefae0",
 			    foreground="#283618"
                 )
 			q_list.append(radio_btn)
